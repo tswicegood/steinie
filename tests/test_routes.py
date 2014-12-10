@@ -8,6 +8,7 @@ from steinie import routes
 
 class ParamFunctionTestCase(TestCase):
     def test_basic_router(self):
+        num = random.randint(1000, 2000)
         router = routes.Router()
         expected = "foo{}".format(random.randint(100, 200))
 
@@ -19,9 +20,9 @@ class ParamFunctionTestCase(TestCase):
 
         @router.get("/<bar:baz>/")
         def parameter(request):
-            call_count.append(1)
-            self.assert_('baz' in request.params)
-            self.assert_(request.params['baz'] == expected.upper())
+            call_count.append(num)
+            self.assertIn('baz', request.params)
+            self.assertIn(request.params['baz'], expected.upper())
 
         url = "/{0}/".format(expected)
         request = mock.Mock(url=url)
@@ -29,3 +30,4 @@ class ParamFunctionTestCase(TestCase):
         r()
 
         self.assert_(len(call_count) == 1)
+        self.assertIn(num, call_count)
