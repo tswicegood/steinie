@@ -31,3 +31,13 @@ class ParamFunctionTestCase(TestCase):
 
         self.assert_(len(call_count) == 1)
         self.assertIn(num, call_count)
+
+    def test_wraps_existing_func(self):
+        router = routes.Router()
+
+        @router.param("bar")
+        def bar_to_upper(param):
+            return param.upper()
+
+        self.assertEqual(bar_to_upper("foo"), "FOO")
+        self.assertEqual(bar_to_upper.__name__, "bar_to_upper")

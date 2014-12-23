@@ -1,5 +1,5 @@
+from functools import wraps
 from werkzeug.routing import BaseConverter, Map, Rule
-from . import responses
 
 
 class Router(object):
@@ -35,4 +35,9 @@ class Router(object):
                     return fn(value)
 
             self.map.converters[name] = BasicParameter
+
+            @wraps(fn)
+            def inner(*args, **kwargs):
+                return fn(*args, **kwargs)
+            return inner
         return outer
