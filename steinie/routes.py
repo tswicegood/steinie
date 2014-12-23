@@ -17,14 +17,15 @@ class Router(object):
         return inner
 
     def get(self, route):
-        def outer(f):
-            outer_id = str(f)
-            self.routes[outer_id] = f
+        def outer(fn):
+            outer_id = str(fn)
+            self.routes[outer_id] = fn
             rule = Rule(route, endpoint=outer_id)
             self.map.add(rule)
 
+            @wraps(fn)
             def inner(*args, **kwargs):
-                return f(*args, **kwargs)
+                return fn(*args, **kwargs)
             return inner
         return outer
 

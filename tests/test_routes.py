@@ -41,3 +41,18 @@ class ParamFunctionTestCase(TestCase):
 
         self.assertEqual(bar_to_upper("foo"), "FOO")
         self.assertEqual(bar_to_upper.__name__, "bar_to_upper")
+
+
+class DecoratedGetFunctionsTestCase(TestCase):
+    def test_wraps_existing_func(self):
+        router = routes.Router()
+
+        @router.get("/")
+        def index(request):
+            return request.url
+
+        random_url = "/foo/bar/%s" % random.randint(100, 200)
+        request = mock.Mock(url=random_url)
+
+        self.assertEqual(index(request), random_url)
+        self.assertEqual(index.__name__, "index")
