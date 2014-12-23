@@ -22,7 +22,7 @@ class ParamFunctionTestCase(TestCase):
         def parameter(request):
             call_count.append(num)
             self.assertIn('baz', request.params)
-            self.assertIn(request.params['baz'], expected.upper())
+            self.assertEqual(request.params['baz'], expected.upper())
 
         url = "/{0}/".format(expected)
         request = mock.Mock(url=url)
