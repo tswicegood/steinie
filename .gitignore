@@ -1,2 +1,4 @@
 MANIFEST
 dist/steinie*.tar.gz
+.coverage
+cover/*
