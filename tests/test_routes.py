@@ -7,6 +7,15 @@ import mock
 from steinie import routes
 
 
+def generate_example_environ():
+    return {
+        'HTTP_HOST': 'example.com',
+        'PATH_INFO': '/',
+        'REQUEST_METHOD': 'GET',
+        'wsgi.url_scheme': ('http', '80'),
+    }
+
+
 class ParamFunctionTestCase(TestCase):
     def test_basic_router(self):
         num = random.randint(1000, 2000)
@@ -26,7 +35,7 @@ class ParamFunctionTestCase(TestCase):
             self.assertEqual(request.params['baz'], expected.upper())
 
         path = "/{0}/".format(expected)
-        request = mock.Mock(path=path, environ=False)
+        request = mock.Mock(path=path, environ=generate_example_environ())
         r = router.find_for(request)
         r()
 
@@ -53,7 +62,7 @@ class DecoratedGetFunctionsTestCase(TestCase):
             return request.path
 
         random_path = "/foo/bar/%s" % random.randint(100, 200)
-        request = mock.Mock(path=random_path, environ=False)
+        request = mock.Mock(path=random_path)
 
         self.assertEqual(index(request), random_path)
         self.assertEqual(index.__name__, "index")
