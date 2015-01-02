@@ -7,6 +7,8 @@ import requests
 from steinie import routes
 from steinie import app
 
+from . import utils
+
 
 class SteinieTest(unittest.TestCase):
     def test_is_a_route(self):
@@ -27,12 +29,6 @@ class SteinieTest(unittest.TestCase):
         r = requests.get("http://localhost:5151/")
         expected = "Random number is: {}".format(random_number)
         # print(r.content)
-        try:
+
+        with utils.terminate_process(process):
             self.assertEqual(expected, r.content)
-        except Exception as e:
-            if process.is_alive():
-                process.terminate()
-            raise e
-        finally:
-            if process.is_alive():
-                process.terminate()
