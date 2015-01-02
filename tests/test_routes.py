@@ -2,6 +2,7 @@ import random
 from unittest import TestCase
 
 import mock
+import werkzeug
 
 from steinie import exceptions
 from steinie import routes
@@ -76,5 +77,5 @@ class DecoratedGetFunctionsTestCase(TestCase):
 
         post_environ = generate_example_environ(method='POST')
         request = mock.Mock(path="/", environ=post_environ, method='POST')
-        with self.assertRaises(exceptions.Http405):
+        with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
             router.handle(request)()
