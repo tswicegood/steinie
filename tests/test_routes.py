@@ -4,7 +4,6 @@ from unittest import TestCase
 import mock
 import werkzeug
 
-from steinie import exceptions
 from steinie import routes
 
 
