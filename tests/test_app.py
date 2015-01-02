@@ -23,7 +23,7 @@ class SteinieTest(unittest.TestCase):
             return "Random number is: {}".format(random_number)
 
         with utils.run_app(a):
-            r = requests.get("http://localhost:5151/")
+            r = utils.get("http://localhost:5151/")
             expected = "Random number is: {}".format(random_number)
             self.assertEqual(expected, r.content)
 
@@ -36,6 +36,6 @@ class SteinieTest(unittest.TestCase):
             return "Hi, from port {}".format(random_port)
 
         with utils.run_app(a):
-            r = requests.get("http://localhost:{}/".format(random_port))
+            r = utils.get("http://localhost:{}/".format(random_port))
             expected = "Hi, from port {}".format(random_port)
             self.assertEqual(expected, r.content)
