@@ -53,3 +53,6 @@ class SteinieTest(unittest.TestCase):
             r = utils.get("http://{}:5151/".format(host))
             expected = "Hi, from host {}".format(host)
             self.assertEqual(expected, r.content)
+
+            with self.assertRaises(requests.exceptions.ConnectionError):
+                utils.get("http://loclhost:5151/")
