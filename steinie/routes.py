@@ -1,6 +1,8 @@
 from functools import wraps
 from werkzeug.routing import BaseConverter, Map, Rule
 
+from . import exceptions
+
 
 class Router(object):
     def __init__(self):
@@ -13,7 +15,9 @@ class Router(object):
 
         def inner():
             request.params = params
-            return self.routes[endpoint](request)
+            if request.method in self.routes[endpoint]._allowed_methods:
+                return self.routes[endpoint](request)
+            raise exceptions.Http405()
         return inner
 
     def get(self, route):
@@ -22,6 +26,8 @@ class Router(object):
             self.routes[outer_id] = fn
             rule = Rule(route, endpoint=outer_id)
             self.map.add(rule)
+
+            fn._allowed_methods = ['GET', ]
 
             @wraps(fn)
             def inner(*args, **kwargs):

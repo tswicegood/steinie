@@ -1,17 +1,17 @@
 import random
-import unittest
 from unittest import TestCase
 
 import mock
 
+from steinie import exceptions
 from steinie import routes
 
 
-def generate_example_environ():
+def generate_example_environ(method="GET"):
     return {
         'HTTP_HOST': 'example.com',
         'PATH_INFO': '/',
-        'REQUEST_METHOD': 'GET',
+        'REQUEST_METHOD': method,
         'wsgi.url_scheme': ('http', '80'),
     }
 
@@ -35,7 +35,7 @@ class ParamFunctionTestCase(TestCase):
             self.assertEqual(request.params['baz'], expected.upper())
 
         path = "/{0}/".format(expected)
-        request = mock.Mock(path=path, environ=generate_example_environ())
+        request = mock.Mock(path=path, environ=generate_example_environ(), method='GET')
         r = router.handle(request)
         r()
 
@@ -66,3 +66,15 @@ class DecoratedGetFunctionsTestCase(TestCase):
 
         self.assertEqual(index(request), random_path)
         self.assertEqual(index.__name__, "index")
+
+    def test_does_not_match_on_post(self):
+        router = routes.Router()
+
+        @router.get("/")
+        def index(request):
+            return request.path
+
+        post_environ = generate_example_environ(method='POST')
+        request = mock.Mock(path="/", environ=post_environ, method='POST')
+        with self.assertRaises(exceptions.Http405):
+            router.handle(request)()
