@@ -5,7 +5,8 @@ from . import routes
 
 
 class Steinie(routes.Router):
-    def __init__(self, port=5151):
+    def __init__(self, host="127.0.0.1", port=5151):
+        self.host = host
         self.port = port
         super(Steinie, self).__init__()
 
@@ -18,5 +19,4 @@ class Steinie(routes.Router):
         return wrappers.Response(fn())(environ, start_response)
 
     def run(self):
-        host = "localhost"
-        serving.run_simple(host, self.port, self, use_debugger=True)
+        serving.run_simple(self.host, self.port, self, use_debugger=True)

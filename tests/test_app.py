@@ -1,4 +1,5 @@
 import random
+import socket
 import unittest
 
 import requests
@@ -38,4 +39,17 @@ class SteinieTest(unittest.TestCase):
         with utils.run_app(a):
             r = utils.get("http://localhost:{}/".format(random_port))
             expected = "Hi, from port {}".format(random_port)
+            self.assertEqual(expected, r.content)
+
+    def test_can_listen_on_alternatve_addresses(self):
+        host = socket.gethostname()
+        a = app.Steinie(host=host)
+
+        @a.get("/")
+        def index(request):
+            return "Hi, from host {}".format(host)
+
+        with utils.run_app(a):
+            r = utils.get("http://{}:5151/".format(host))
+            expected = "Hi, from host {}".format(host)
             self.assertEqual(expected, r.content)
