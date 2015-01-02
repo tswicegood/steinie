@@ -2,6 +2,7 @@ import random
 import socket
 import unittest
 
+import mock
 import requests
 
 from steinie import routes
@@ -56,3 +57,16 @@ class SteinieTest(unittest.TestCase):
 
             with self.assertRaises(requests.exceptions.ConnectionError):
                 utils.get("http://loclhost:5151/")
+
+    def test_runs_with_debug_based_on_instantiation(self):
+        a = app.Steinie(debug=True)
+        with mock.patch.object(app.serving, 'run_simple') as run_simple:
+            a.run()
+
+        run_simple.assert_called_with(a.host, a.port, a, use_debugger=True)
+
+    def test_defaults_to_debug_off(self):
+        a = app.Steinie()
+        with mock.patch.object(app.serving, 'run_simple') as run_simple:
+            a.run()
+        run_simple.assert_called_with(a.host, a.port, a, use_debugger=False)

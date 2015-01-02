@@ -5,9 +5,10 @@ from . import routes
 
 
 class Steinie(routes.Router):
-    def __init__(self, host="127.0.0.1", port=5151):
+    def __init__(self, host="127.0.0.1", port=5151, debug=False):
         self.host = host
         self.port = port
+        self.debug = debug
         super(Steinie, self).__init__()
 
     def __call__(self, environ, start_response):
@@ -19,4 +20,4 @@ class Steinie(routes.Router):
         return wrappers.Response(fn())(environ, start_response)
 
     def run(self):
-        serving.run_simple(self.host, self.port, self, use_debugger=True)
+        serving.run_simple(self.host, self.port, self, use_debugger=self.debug)
