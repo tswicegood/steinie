@@ -16,11 +16,11 @@ class Router(object):
             return self.routes[endpoint](request)
         return inner
 
-    def post(self, route):
+    def method(self, route, methods=None):
         def outer(fn):
             outer_id = str(fn)
             self.routes[outer_id] = fn
-            rule = Rule(route, endpoint=outer_id, methods=['POST', ])
+            rule = Rule(route, endpoint=outer_id, methods=methods)
             self.map.add(rule)
 
             @wraps(fn)
@@ -29,19 +29,12 @@ class Router(object):
             return inner
 
         return outer
+
+    def post(self, route):
+        return self.method(route, methods=['POST', ])
 
     def get(self, route):
-        def outer(fn):
-            outer_id = str(fn)
-            self.routes[outer_id] = fn
-            rule = Rule(route, endpoint=outer_id, methods=['GET', ])
-            self.map.add(rule)
-
-            @wraps(fn)
-            def inner(*args, **kwargs):
-                return fn(*args, **kwargs)
-            return inner
-        return outer
+        return self.method(route, methods=['GET', ])
 
     def param(self, name):
         def outer(fn):
