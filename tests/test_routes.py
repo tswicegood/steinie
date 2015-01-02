@@ -1,4 +1,5 @@
 import random
+import unittest
 from unittest import TestCase
 
 import mock
@@ -24,8 +25,8 @@ class ParamFunctionTestCase(TestCase):
             self.assertIn('baz', request.params)
             self.assertEqual(request.params['baz'], expected.upper())
 
-        url = "/{0}/".format(expected)
-        request = mock.Mock(url=url)
+        path = "/{0}/".format(expected)
+        request = mock.Mock(path=path, environ=False)
         r = router.find_for(request)
         r()
 
@@ -49,10 +50,10 @@ class DecoratedGetFunctionsTestCase(TestCase):
 
         @router.get("/")
         def index(request):
-            return request.url
+            return request.path
 
-        random_url = "/foo/bar/%s" % random.randint(100, 200)
-        request = mock.Mock(url=random_url)
+        random_path = "/foo/bar/%s" % random.randint(100, 200)
+        request = mock.Mock(path=random_path, environ=False)
 
-        self.assertEqual(index(request), random_url)
+        self.assertEqual(index(request), random_path)
         self.assertEqual(index.__name__, "index")

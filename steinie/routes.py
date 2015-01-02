@@ -8,8 +8,14 @@ class Router(object):
         self.routes = {}
 
     def find_for(self, request):
-        urls = self.map.bind("example.com", "/")
-        endpoint, params = urls.match(request.url)
+        if getattr(request, 'environ', False):
+            # print("binding to environ")
+            urls = self.map.bind_to_environ(request.environ)
+
+        # TODO This is test-specific code, need to rework
+        else:
+            urls = self.map.bind("example.com", "/")
+        endpoint, params = urls.match(request.path)
 
         def inner():
             request.params = params
