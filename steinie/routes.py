@@ -16,6 +16,20 @@ class Router(object):
             return self.routes[endpoint](request)
         return inner
 
+    def post(self, route):
+        def outer(fn):
+            outer_id = str(fn)
+            self.routes[outer_id] = fn
+            rule = Rule(route, endpoint=outer_id, methods=['POST', ])
+            self.map.add(rule)
+
+            @wraps(fn)
+            def inner(*args, **kwargs):
+                return fn(*args, **kwargs)
+            return inner
+
+        return outer
+
     def get(self, route):
         def outer(fn):
             outer_id = str(fn)
