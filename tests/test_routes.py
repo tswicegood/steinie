@@ -35,8 +35,8 @@ class ParamFunctionTestCase(TestCase):
             self.assertEqual(request.params['baz'], expected.upper())
 
         path = "/{0}/".format(expected)
-        request = mock.Mock(path=path, environ=generate_example_environ(), method='GET')
-        r = router.handle(request)
+        request = mock.Mock(path=path, environ=generate_example_environ())
+        router.handle(request)
 
         self.assert_(len(call_count) == 1)
         self.assertIn(num, call_count)
