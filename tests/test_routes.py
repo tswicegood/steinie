@@ -36,7 +36,7 @@ class ParamFunctionTestCase(TestCase):
 
         path = "/{0}/".format(expected)
         request = mock.Mock(path=path, environ=generate_example_environ())
-        r = router.find_for(request)
+        r = router.handle(request)
         r()
 
         self.assert_(len(call_count) == 1)

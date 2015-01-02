@@ -10,7 +10,7 @@ class Steinie(routes.Router):
 
     def wsgi_app(self, environ, start_response):
         request = wrappers.Request(environ)
-        fn = self.find_for(request)
+        fn = self.handle(request)
         return wrappers.Response(fn())(environ, start_response)
 
     def run(self):

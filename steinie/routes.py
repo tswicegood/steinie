@@ -7,7 +7,7 @@ class Router(object):
         self.map = Map()
         self.routes = {}
 
-    def find_for(self, request):
+    def handle(self, request):
         urls = self.map.bind_to_environ(request.environ)
         endpoint, params = urls.match(request.path)
 
