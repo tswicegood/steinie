@@ -26,3 +26,16 @@ class SteinieTest(unittest.TestCase):
             r = requests.get("http://localhost:5151/")
             expected = "Random number is: {}".format(random_number)
             self.assertEqual(expected, r.content)
+
+    def test_can_run_on_random_ports(self):
+        random_port = random.randint(20000, 25000)
+        a = app.Steinie(port=random_port)
+
+        @a.get("/")
+        def index(request):
+            return "Hi, from port {}".format(random_port)
+
+        with utils.run_app(a):
+            r = requests.get("http://localhost:{}/".format(random_port))
+            expected = "Hi, from port {}".format(random_port)
+            self.assertEqual(expected, r.content)

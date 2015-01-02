@@ -5,6 +5,10 @@ from . import routes
 
 
 class Steinie(routes.Router):
+    def __init__(self, port=5151):
+        self.port = port
+        super(Steinie, self).__init__()
+
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
 
@@ -15,5 +19,4 @@ class Steinie(routes.Router):
 
     def run(self):
         host = "localhost"
-        port = 5151
-        serving.run_simple(host, port, self, use_debugger=True)
+        serving.run_simple(host, self.port, self, use_debugger=True)
