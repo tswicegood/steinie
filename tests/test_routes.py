@@ -38,7 +38,6 @@ class ParamFunctionTestCase(TestCase):
         path = "/{0}/".format(expected)
         request = mock.Mock(path=path, environ=generate_example_environ(), method='GET')
         r = router.handle(request)
-        r()
 
         self.assert_(len(call_count) == 1)
         self.assertIn(num, call_count)
@@ -79,7 +78,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
         post_environ = generate_example_environ(method='POST')
         request = mock.Mock(path='/', environ=post_environ)
 
-        response = router.handle(request)()
+        response = router.handle(request)
         self.assertEqual(r, response)
 
     def test_does_not_match_on_get(self):
@@ -94,7 +93,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
         request = mock.Mock(path='/', environ=post_environ)
 
         with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
-            router.handle(request)()
+            router.handle(request)
 
 
 class DecoratedGetFunctionsTestCase(TestCase):
@@ -121,4 +120,4 @@ class DecoratedGetFunctionsTestCase(TestCase):
         post_environ = generate_example_environ(method='POST')
         request = mock.Mock(path="/", environ=post_environ, method='POST')
         with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
-            router.handle(request)()
+            router.handle(request)

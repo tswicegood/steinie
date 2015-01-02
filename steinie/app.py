@@ -16,8 +16,8 @@ class Steinie(routes.Router):
 
     def wsgi_app(self, environ, start_response):
         request = wrappers.Request(environ)
-        fn = self.handle(request)
-        return wrappers.Response(fn())(environ, start_response)
+        response = self.handle(request)
+        return wrappers.Response(response)(environ, start_response)
 
     def run(self):
         serving.run_simple(self.host, self.port, self, use_debugger=self.debug)

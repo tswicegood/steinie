@@ -11,10 +11,8 @@ class Router(object):
         urls = self.map.bind_to_environ(request.environ)
         endpoint, params = urls.match(request.path)
 
-        def inner():
-            request.params = params
-            return self.routes[endpoint](request)
-        return inner
+        request.params = params
+        return self.routes[endpoint](request)
 
     def method(self, route, methods=None):
         def outer(fn):
