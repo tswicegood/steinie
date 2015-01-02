@@ -1,4 +1,3 @@
-from multiprocessing import Process
 import random
 import unittest
 
@@ -23,12 +22,7 @@ class SteinieTest(unittest.TestCase):
         def index(request):
             return "Random number is: {}".format(random_number)
 
-        process = Process(target=a.run)
-        process.start()
-
-        r = requests.get("http://localhost:5151/")
-        expected = "Random number is: {}".format(random_number)
-        # print(r.content)
-
-        with utils.terminate_process(process):
+        with utils.run_app(a):
+            r = requests.get("http://localhost:5151/")
+            expected = "Random number is: {}".format(random_number)
             self.assertEqual(expected, r.content)
