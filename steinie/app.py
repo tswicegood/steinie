@@ -1,6 +1,11 @@
 from werkzeug import wrappers
 
 from . import responses
+from . import routes
+
+
+class Steinie(routes.Router):
+    pass
 
 
 def create_app(callback):
