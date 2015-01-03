@@ -1,3 +1,4 @@
+from werkzeug import routing
 from werkzeug import serving
 from werkzeug import wrappers
 
@@ -21,3 +22,17 @@ class Steinie(routes.Router):
 
     def run(self):
         serving.run_simple(self.host, self.port, self, use_debugger=self.debug)
+
+    def use(self, route, router):
+        # if not route.endswith('/'):
+        #     route += '/'
+        if route.startswith('/'):
+            route = route[1:]
+        submount = route
+        if not submount.startswith('/'):
+            submount = '/' + submount
+        rules = [a for a in router.map.iter_rules()]
+
+        mount = routing.EndpointPrefix(route, [routes.Submount(submount, rules)])
+        self.map.add(mount)
+        # import ipdb; ipdb.set_trace()

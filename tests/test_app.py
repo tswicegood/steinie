@@ -70,3 +70,25 @@ class SteinieTest(unittest.TestCase):
         with mock.patch.object(app.serving, 'run_simple') as run_simple:
             a.run()
         run_simple.assert_called_with(a.host, a.port, a, use_debugger=False)
+
+    def test_allows_nested_routes(self):
+        r = routes.Router()
+
+        @r.get("/foo")
+        def handle_foo(request):
+            return "\n".join([
+                "request.path: %s" % request.path,
+                "request.original_path: %s" % request.original_path,
+            ])
+
+        a = app.Steinie()
+        a.use("/bar", r)
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/bar/foo")
+
+            expected = "\n".join([
+                "request.path: /foo",
+                "request.original_path: /bar/foo",
+            ])
+            self.assertEqual(expected, response.content)
