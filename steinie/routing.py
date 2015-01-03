@@ -23,6 +23,10 @@ class Rule(routing.Rule):
         return rule
 
 
+class EndpointPrefix(routing.EndpointPrefix):
+    pass
+
+
 class Submount(routing.Submount):
     def get_rules(self, map):
         for rule in super(Submount, self).get_rules(map):

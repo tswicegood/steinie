@@ -1,11 +1,10 @@
-from werkzeug import routing
 from werkzeug import serving
 from werkzeug import wrappers
 
-from . import routes
+from . import routing
 
 
-class Steinie(routes.Router):
+class Steinie(routing.Router):
     def __init__(self, host="127.0.0.1", port=5151, debug=False):
         self.host = host
         self.port = port
@@ -31,5 +30,5 @@ class Steinie(routes.Router):
             submount = '/' + submount
         rules = [a for a in router.map.iter_rules()]
 
-        mount = routing.EndpointPrefix(route, [routes.Submount(submount, rules)])
+        mount = routing.EndpointPrefix(route, [routing.Submount(submount, rules)])
         self.map.add(mount)

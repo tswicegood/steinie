@@ -5,7 +5,7 @@ import unittest
 import mock
 import requests
 
-from steinie import routes
+from steinie import routing
 from steinie import app
 
 from . import utils
@@ -14,7 +14,7 @@ from . import utils
 class SteinieTest(unittest.TestCase):
     def test_is_a_route(self):
         a = app.Steinie()
-        self.assertIsInstance(a, routes.Router)
+        self.assertIsInstance(a, routing.Router)
 
     def test_can_run_and_route_requests(self):
         random_number = random.randint(1000, 2000)
@@ -72,7 +72,7 @@ class SteinieTest(unittest.TestCase):
         run_simple.assert_called_with(a.host, a.port, a, use_debugger=False)
 
     def test_allows_nested_routes(self):
-        r = routes.Router()
+        r = routing.Router()
 
         @r.get("/foo")
         def handle_foo(request):

@@ -4,7 +4,7 @@ from unittest import TestCase
 import mock
 import werkzeug
 
-from steinie import routes
+from steinie import routing
 
 
 def generate_example_environ(method="GET"):
@@ -19,7 +19,7 @@ def generate_example_environ(method="GET"):
 class ParamFunctionTestCase(TestCase):
     def test_basic_router(self):
         num = random.randint(1000, 2000)
-        router = routes.Router()
+        router = routing.Router()
         expected = "foo{}".format(random.randint(100, 200))
 
         call_count = []
@@ -42,7 +42,7 @@ class ParamFunctionTestCase(TestCase):
         self.assertIn(num, call_count)
 
     def test_wraps_existing_func(self):
-        router = routes.Router()
+        router = routing.Router()
 
         @router.param("bar")
         def bar_to_upper(param):
@@ -54,7 +54,7 @@ class ParamFunctionTestCase(TestCase):
 
 class DecoratedPostFunctionsTestCase(TestCase):
     def test_wraps_existing_func(self):
-        router = routes.Router()
+        router = routing.Router()
 
         @router.post("/")
         def index(request):
@@ -68,7 +68,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
 
     def test_is_dispatched_to_via_handle(self):
         r = random.randint(1000, 2000)
-        router = routes.Router()
+        router = routing.Router()
 
         @router.post("/")
         def index(request):
@@ -82,7 +82,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
 
     def test_does_not_match_on_get(self):
         r = random.randint(1000, 2000)
-        router = routes.Router()
+        router = routing.Router()
 
         @router.post("/")
         def index(request):
@@ -97,7 +97,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
 
 class DecoratedGetFunctionsTestCase(TestCase):
     def test_wraps_existing_func(self):
-        router = routes.Router()
+        router = routing.Router()
 
         @router.get("/")
         def index(request):
@@ -110,7 +110,7 @@ class DecoratedGetFunctionsTestCase(TestCase):
         self.assertEqual(index.__name__, "index")
 
     def test_does_not_match_on_post(self):
-        router = routes.Router()
+        router = routing.Router()
 
         @router.get("/")
         def index(request):
