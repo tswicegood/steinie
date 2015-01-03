@@ -24,8 +24,6 @@ class Steinie(routes.Router):
         serving.run_simple(self.host, self.port, self, use_debugger=self.debug)
 
     def use(self, route, router):
-        # if not route.endswith('/'):
-        #     route += '/'
         if route.startswith('/'):
             route = route[1:]
         submount = route
@@ -35,4 +33,3 @@ class Steinie(routes.Router):
 
         mount = routing.EndpointPrefix(route, [routes.Submount(submount, rules)])
         self.map.add(mount)
-        # import ipdb; ipdb.set_trace()
