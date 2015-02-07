@@ -12,9 +12,9 @@ def rule_dispatcher(rule, request):
 
 
 class Rule(routing.Rule):
-    def __init__(self, string=None, func=None, *args, **kwargs):
-        super(Rule, self).__init__(string, *args, **kwargs)
-        self.func = func
+    def __init__(self, *args, **kwargs):
+        self.func = kwargs.pop('func', None)
+        super(Rule, self).__init__(*args, **kwargs)
         self.bound_prefix = None
 
     def empty(self):
