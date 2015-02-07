@@ -93,3 +93,14 @@ class Router(object):
                 return fn(*args, **kwargs)
             return inner
         return outer
+
+    def use(self, route, router):
+        if route.startswith('/'):
+            route = route[1:]
+        submount = route
+        if not submount.startswith('/'):
+            submount = '/' + submount
+        rules = [a for a in router.map.iter_rules()]
+
+        mount = EndpointPrefix(route, [Submount(submount, rules)])
+        self.map.add(mount)

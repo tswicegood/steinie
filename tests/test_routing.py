@@ -16,6 +16,29 @@ def generate_example_environ(method="GET"):
     }
 
 
+class NestedRoutingTestCase(TestCase):
+    def test_allows_tested_router(self):
+        r1 = routing.Router()
+
+        @r1.get("/foo")
+        def handle_foo(request):
+            return "\n".join([
+                "request.path: %s" % request.path,
+                "request.original_path: %s" % request.original_path,
+            ])
+
+        r2 = routing.Router()
+        r2.use("/bar", r1)
+
+        request = mock.Mock(path="/bar/foo", environ=generate_example_environ())
+        response = r2.handle(request)
+        expected = "\n".join([
+            "request.path: /foo",
+            "request.original_path: /bar/foo",
+        ])
+        self.assertEqual(expected, response)
+
+
 class ParamFunctionTestCase(TestCase):
     def test_basic_router(self):
         num = random.randint(1000, 2000)
