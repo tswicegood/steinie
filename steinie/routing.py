@@ -96,7 +96,12 @@ class Router(object):
             return inner
         return outer
 
-    def use(self, route, router):
+    def use(self, *args):
+        if len(args) == 2:
+            route, router = args
+            self.add_router(route, router)
+
+    def add_router(self, route, router):
         if route.startswith('/'):
             route = route[1:]
         submount = route
