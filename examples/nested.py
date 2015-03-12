@@ -16,3 +16,6 @@ def handle_foo(request):
 
 app = app.Steinie()
 app.use("/bar", r)
+
+if __name__ == "__main__":
+    app.run()

@@ -19,3 +19,6 @@ def handler(request):
 
 app = app.Steinie()
 app.use("/", r)
+
+if __name__ == "__main__":
+    app.run()
