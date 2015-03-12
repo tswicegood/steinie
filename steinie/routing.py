@@ -47,6 +47,7 @@ class Map(routing.Map):
 class Router(object):
     def __init__(self):
         self.map = Map(self)
+        self.converters = {}
         self.routes = {}
 
     def handle(self, request):
@@ -87,6 +88,7 @@ class Router(object):
                     return fn(value)
 
             self.map.converters[name] = BasicParameter
+            self.converters[name] = fn
 
             @wraps(fn)
             def inner(*args, **kwargs):
@@ -103,4 +105,6 @@ class Router(object):
         rules = [a for a in router.map.iter_rules()]
 
         mount = EndpointPrefix(route, [Submount(submount, rules)])
+        for name, fn in router.converters.items():
+            self.param(name)(fn)
         self.map.add(mount)

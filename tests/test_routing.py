@@ -74,6 +74,36 @@ class ParamFunctionTestCase(TestCase):
         self.assertEqual(bar_to_upper("foo"), "FOO")
         self.assertEqual(bar_to_upper.__name__, "bar_to_upper")
 
+    def test_supports_nested_params(self):
+        num = random.randint(1000, 2000)
+        router = routing.Router()
+        expected = "foo{}".format(random.randint(100, 200))
+
+        call_count = []
+
+        @router.param("bar")
+        def bar_to_upper(param):
+            return param.upper()
+
+        @router.get("/<bar:baz>/")
+        def parameter(request):
+            call_count.append(num)
+            self.assertIn('baz', request.params)
+            self.assertEqual(request.params['baz'], expected.upper())
+
+        path = "/{0}/".format(expected)
+        request = mock.Mock(path=path, environ=generate_example_environ())
+        router.handle(request)
+
+        self.assert_(len(call_count) == 1)
+        self.assertIn(num, call_count)
+
+        router2 = routing.Router()
+        router2.use("/", router)
+        router2.handle(request)
+
+        self.assert_(len(call_count) == 2)
+
 
 class DecoratedPostFunctionsTestCase(TestCase):
     def test_wraps_existing_func(self):

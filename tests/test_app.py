@@ -92,3 +92,21 @@ class SteinieTest(unittest.TestCase):
                 "request.original_path: /bar/foo",
             ])
             self.assertEqual(expected, response.content)
+
+    def test_uses_params(self):
+        r = routing.Router()
+
+        @r.param("foo")
+        def param_handler(param):
+            return param.upper()
+
+        @r.get("/<foo:foo>")
+        def handler(request):
+            return request.params["foo"]
+
+        a = app.Steinie()
+        a.use("/", r)
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/baz")
+            self.assertEqual("BAZ", response.content)
