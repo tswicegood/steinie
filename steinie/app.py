@@ -15,15 +15,11 @@ class Steinie(routing.Router):
         return self.wsgi_app(environ, start_response)
 
     def wsgi_app(self, environ, start_response):
+        request = wrappers.Request(environ)
         for middleware_class in self.middleware:
-            response = middleware_class(self)(environ, start_response)
+            response = middleware_class(self)(request)
             if response:
                 return wrappers.Response(response)(environ, start_response)
-        request = wrappers.Request(environ)
-        request._steinie = {
-            "environ": environ,
-            "start_response": start_response,
-        }
         response = self.handle(request)
         return wrappers.Response(response)(environ, start_response)
 

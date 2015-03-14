@@ -184,7 +184,7 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, environ, start_repsonse):
+            def __call__(self, request):
                 return "MIDDLEWARE INVOKED"
 
         a = app.Steinie()
@@ -199,7 +199,7 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, environ, start_repsonse):
+            def __call__(self, request):
                 return "MIDDLEWARE INVOKED"
 
         r = routing.Router()

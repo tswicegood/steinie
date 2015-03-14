@@ -22,7 +22,7 @@ class Rule(routing.Rule):
     def dispatch(self, request):
         for middleware_class in self.router.middleware:
             middleware = middleware_class(self)
-            response = middleware(*request._steinie.values())
+            response = middleware(request)
             if response:
                 return response
         return self.func(request)
