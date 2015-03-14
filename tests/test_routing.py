@@ -4,7 +4,10 @@ from unittest import TestCase
 import mock
 import werkzeug
 
+from steinie import app
 from steinie import routing
+
+from . import utils
 
 
 def generate_example_environ(method="GET"):
@@ -173,3 +176,23 @@ class DecoratedGetFunctionsTestCase(TestCase):
         request = mock.Mock(path="/", environ=post_environ, method='POST')
         with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
             router.handle(request)
+
+
+from nose.plugins.attrib import attr
+
+
+class MiddlewareTestCase(TestCase):
+    def test_allows_using_middleware(self):
+        class Middleware(object):
+            def __init__(self, app):
+                pass
+
+            def __call__(self, environ, start_repsonse):
+                return "MIDDLEWARE INVOKED"
+
+        a = app.Steinie()
+        a.use(Middleware)
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/baz")
+            self.assertIn("MIDDLEWARE INVOKED", response.content)

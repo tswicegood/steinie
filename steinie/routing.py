@@ -49,6 +49,7 @@ class Router(object):
         self.map = Map(self)
         self.converters = {}
         self.routes = {}
+        self.middleware = []
 
     def handle(self, request):
         urls = self.map.bind_to_environ(request.environ)
@@ -97,6 +98,9 @@ class Router(object):
         return outer
 
     def use(self, *args):
+        if len(args) == 1:
+            self.middleware.append(args[0])
+
         if len(args) == 2:
             route, router = args
             self.add_router(route, router)
