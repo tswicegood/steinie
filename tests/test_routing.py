@@ -204,6 +204,7 @@ class MiddlewareTestCase(TestCase):
 
         r = routing.Router()
         r.use(Middleware)
+
         @r.get("/baz")
         def get(request):
             pass
