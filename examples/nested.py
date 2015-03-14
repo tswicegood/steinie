@@ -8,7 +8,7 @@ r = routing.Router()
 
 
 @r.get("/foo")
-def handle_foo(request):
+def handle_foo(request, response):
     return "\n".join([
         "request.path: %s" % request.path,
         "request.original_path: %s" % request.original_path,

@@ -21,7 +21,7 @@ class SteinieTest(unittest.TestCase):
         a = app.Steinie()
 
         @a.get("/")
-        def index(request):
+        def index(request, response):
             return "Random number is: {}".format(random_number)
 
         with utils.run_app(a):
@@ -34,7 +34,7 @@ class SteinieTest(unittest.TestCase):
         a = app.Steinie(port=random_port)
 
         @a.get("/")
-        def index(request):
+        def index(request, response):
             return "Hi, from port {}".format(random_port)
 
         with utils.run_app(a):
@@ -47,7 +47,7 @@ class SteinieTest(unittest.TestCase):
         a = app.Steinie(host=host)
 
         @a.get("/")
-        def index(request):
+        def index(request, response):
             return "Hi, from host {}".format(host)
 
         with utils.run_app(a):
@@ -75,7 +75,7 @@ class SteinieTest(unittest.TestCase):
         r = routing.Router()
 
         @r.get("/foo")
-        def handle_foo(request):
+        def handle_foo(request, response):
             return "\n".join([
                 "request.path: %s" % request.path,
                 "request.original_path: %s" % request.original_path,
@@ -101,7 +101,7 @@ class SteinieTest(unittest.TestCase):
             return param.upper()
 
         @r.get("/<foo:foo>")
-        def handler(request):
+        def handler(request, response):
             return request.params["foo"]
 
         a = app.Steinie()

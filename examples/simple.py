@@ -8,7 +8,7 @@ app = app.Steinie()
 
 
 @app.get("/")
-def handle(request):
+def handle(request, response):
     return "Hello, World!  This is Steinie.\n"
 
 if __name__ == "__main__":

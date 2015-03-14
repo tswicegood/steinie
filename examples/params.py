@@ -13,7 +13,7 @@ def to_upper(param):
 
 
 @r.get("/<msg:msg>")
-def handler(request):
+def handler(request, response):
     return "Hello, {msg}".format(msg=request.params["msg"])
 
 

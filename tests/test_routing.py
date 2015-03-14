@@ -24,7 +24,7 @@ class NestedRoutingTestCase(TestCase):
         r1 = routing.Router()
 
         @r1.get("/foo")
-        def handle_foo(request):
+        def handle_foo(request, response):
             return "\n".join([
                 "request.path: %s" % request.path,
                 "request.original_path: %s" % request.original_path,
@@ -34,7 +34,7 @@ class NestedRoutingTestCase(TestCase):
         r2.use("/bar", r1)
 
         request = mock.Mock(path="/bar/foo", environ=generate_example_environ())
-        response = r2.handle(request)
+        response = r2.handle(request, mock.Mock())
         expected = "\n".join([
             "request.path: /foo",
             "request.original_path: /bar/foo",
@@ -62,7 +62,7 @@ class ParamFunctionTestCase(TestCase):
 
         path = "/{0}/".format(expected)
         request = mock.Mock(path=path, environ=generate_example_environ())
-        router.handle(request)
+        router.handle(request, mock.Mock())
 
         self.assert_(len(call_count) == 1)
         self.assertIn(num, call_count)
@@ -96,14 +96,14 @@ class ParamFunctionTestCase(TestCase):
 
         path = "/{0}/".format(expected)
         request = mock.Mock(path=path, environ=generate_example_environ())
-        router.handle(request)
+        router.handle(request, mock.Mock())
 
         self.assert_(len(call_count) == 1)
         self.assertIn(num, call_count)
 
         router2 = routing.Router()
         router2.use("/", router)
-        router2.handle(request)
+        router2.handle(request, mock.Mock())
 
         self.assert_(len(call_count) == 2)
 
@@ -133,7 +133,7 @@ class DecoratedPostFunctionsTestCase(TestCase):
         post_environ = generate_example_environ(method='POST')
         request = mock.Mock(path='/', environ=post_environ)
 
-        response = router.handle(request)
+        response = router.handle(request, mock.Mock())
         self.assertEqual(r, response)
 
     def test_does_not_match_on_get(self):
@@ -141,14 +141,14 @@ class DecoratedPostFunctionsTestCase(TestCase):
         router = routing.Router()
 
         @router.post("/")
-        def index(request):
+        def index(request, response):
             return r
 
         post_environ = generate_example_environ(method='GET')
         request = mock.Mock(path='/', environ=post_environ)
 
         with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
-            router.handle(request)
+            router.handle(request, mock.Mock())
 
 
 class DecoratedGetFunctionsTestCase(TestCase):
@@ -175,7 +175,7 @@ class DecoratedGetFunctionsTestCase(TestCase):
         post_environ = generate_example_environ(method='POST')
         request = mock.Mock(path="/", environ=post_environ, method='POST')
         with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
-            router.handle(request)
+            router.handle(request, mock.Mock())
 
 
 class MiddlewareTestCase(TestCase):
@@ -184,8 +184,9 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, request):
-                return "MIDDLEWARE INVOKED"
+            def __call__(self, request, response):
+                response.data = "MIDDLEWARE INVOKED"
+                return response
 
         a = app.Steinie()
         a.use(Middleware)
@@ -199,8 +200,9 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, request):
-                return "MIDDLEWARE INVOKED"
+            def __call__(self, request, response):
+                response.data = "MIDDLEWARE INVOKED"
+                return response
 
         r = routing.Router()
         r.use(Middleware)

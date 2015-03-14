@@ -16,12 +16,17 @@ class Steinie(routing.Router):
 
     def wsgi_app(self, environ, start_response):
         request = wrappers.Request(environ)
+        response = wrappers.Response()
         for middleware_class in self.middleware:
-            response = middleware_class(self)(request)
-            if response:
-                return wrappers.Response(response)(environ, start_response)
-        response = self.handle(request)
-        return wrappers.Response(response)(environ, start_response)
+            new_response = middleware_class(self)(request, response)
+            if new_response:
+                return new_response(environ, start_response)
+        new_response = self.handle(request, response)
+        if not isinstance(new_response, wrappers.Response):
+            response.data = new_response
+        else:
+            response = new_response
+        return response(environ, start_response)
 
     def run(self):
         serving.run_simple(self.host, self.port, self, use_debugger=self.debug)

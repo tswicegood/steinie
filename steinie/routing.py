@@ -3,12 +3,15 @@ from werkzeug import routing
 from werkzeug.routing import BaseConverter
 
 
-def rule_dispatcher(rule, request):
+def rule_dispatcher(rule, request, response):
     if getattr(rule, '_steinie_dispatchable', False):
         request.original_path = request.path
         request.path = request.original_path.replace(rule.bound_prefix, '')
-        return rule.dispatch(request)
-    return rule(request)
+        return rule.dispatch(request, response)
+    try:
+        return rule(request, response)
+    except TypeError:
+        return rule(request)
 
 
 class Rule(routing.Rule):
@@ -19,13 +22,16 @@ class Rule(routing.Rule):
         super(Rule, self).__init__(*args, **kwargs)
         self.bound_prefix = None
 
-    def dispatch(self, request):
+    def dispatch(self, request, response):
         for middleware_class in self.router.middleware:
             middleware = middleware_class(self)
-            response = middleware(request)
-            if response:
-                return response
-        return self.func(request)
+            new_response = middleware(request, response)
+            if new_response:
+                return new_response
+        try:
+            return self.func(request, response)
+        except TypeError:
+            return self.func(request)
 
     def empty(self):
         rule = super(Rule, self).empty()
@@ -62,7 +68,7 @@ class Router(object):
         self.routes = {}
         self.middleware = []
 
-    def handle(self, request):
+    def handle(self, request, response):
         urls = self.map.bind_to_environ(request.environ)
         endpoint, params = urls.match(request.path)
 
@@ -72,7 +78,7 @@ class Router(object):
 
         request.params = params
         rule = self.routes[endpoint]
-        return rule_dispatcher(rule, request)
+        return rule_dispatcher(rule, request, response)
 
     def method(self, route, methods=None):
         def outer(fn):
