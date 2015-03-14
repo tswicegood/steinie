@@ -178,11 +178,7 @@ class DecoratedGetFunctionsTestCase(TestCase):
             router.handle(request)
 
 
-from nose.plugins.attrib import attr
-
-
 class MiddlewareTestCase(TestCase):
-    @attr("only")
     def test_allows_using_middleware(self):
         class Middleware(object):
             def __init__(self, app):
@@ -198,7 +194,6 @@ class MiddlewareTestCase(TestCase):
             response = utils.get("http://localhost:5151/baz")
             self.assertIn("MIDDLEWARE INVOKED", response.content)
 
-    @attr("only")
     def test_allows_using_middleware_from_nested_routers(self):
         class Middleware(object):
             def __init__(self, app):
