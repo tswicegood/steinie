@@ -20,6 +20,10 @@ class Steinie(routing.Router):
             if response:
                 return wrappers.Response(response)(environ, start_response)
         request = wrappers.Request(environ)
+        request._steinie = {
+            "environ": environ,
+            "start_response": start_response,
+        }
         response = self.handle(request)
         return wrappers.Response(response)(environ, start_response)
 

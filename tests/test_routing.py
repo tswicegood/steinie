@@ -182,6 +182,7 @@ from nose.plugins.attrib import attr
 
 
 class MiddlewareTestCase(TestCase):
+    @attr("only")
     def test_allows_using_middleware(self):
         class Middleware(object):
             def __init__(self, app):
@@ -192,6 +193,28 @@ class MiddlewareTestCase(TestCase):
 
         a = app.Steinie()
         a.use(Middleware)
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/baz")
+            self.assertIn("MIDDLEWARE INVOKED", response.content)
+
+    @attr("only")
+    def test_allows_using_middleware_from_nested_routers(self):
+        class Middleware(object):
+            def __init__(self, app):
+                pass
+
+            def __call__(self, environ, start_repsonse):
+                return "MIDDLEWARE INVOKED"
+
+        r = routing.Router()
+        r.use(Middleware)
+        @r.get("/baz")
+        def get(request):
+            pass
+
+        a = app.Steinie()
+        a.use('/', r)
 
         with utils.run_app(a):
             response = utils.get("http://localhost:5151/baz")

@@ -20,11 +20,17 @@ class Rule(routing.Rule):
         self.bound_prefix = None
 
     def dispatch(self, request):
+        for middleware_class in self.router.middleware:
+            middleware = middleware_class(self)
+            response = middleware(*request._steinie.values())
+            if response:
+                return response
         return self.func(request)
 
     def empty(self):
         rule = super(Rule, self).empty()
         rule.func = self.func
+        rule.router = self.router
         return rule
 
 
@@ -66,7 +72,6 @@ class Router(object):
 
         request.params = params
         rule = self.routes[endpoint]
-        print(rule)
         return rule_dispatcher(rule, request)
 
     def method(self, route, methods=None):
