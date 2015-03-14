@@ -4,18 +4,23 @@ from werkzeug.routing import BaseConverter
 
 
 def rule_dispatcher(rule, request):
-    if hasattr(rule, 'func'):
+    if getattr(rule, '_steinie_dispatchable', False):
         request.original_path = request.path
         request.path = request.original_path.replace(rule.bound_prefix, '')
-        return rule.func(request)
+        return rule.dispatch(request)
     return rule(request)
 
 
 class Rule(routing.Rule):
     def __init__(self, *args, **kwargs):
+        self._steinie_dispatchable = True
         self.func = kwargs.pop('func', None)
+        self.router = kwargs.pop('router', None)
         super(Rule, self).__init__(*args, **kwargs)
         self.bound_prefix = None
+
+    def dispatch(self, request):
+        return self.func(request)
 
     def empty(self):
         rule = super(Rule, self).empty()
@@ -61,12 +66,14 @@ class Router(object):
 
         request.params = params
         rule = self.routes[endpoint]
+        print(rule)
         return rule_dispatcher(rule, request)
 
     def method(self, route, methods=None):
         def outer(fn):
             self.routes[route] = fn
-            rule = Rule(route, endpoint=route, methods=methods, func=fn)
+            rule = Rule(route, endpoint=route, methods=methods, func=fn,
+                        router=self)
             self.map.add(rule)
 
             @wraps(fn)
