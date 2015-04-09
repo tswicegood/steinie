@@ -2,6 +2,7 @@ from werkzeug import serving
 from werkzeug import wrappers
 
 from . import routing
+from . import utils
 
 
 class Steinie(routing.Router):
@@ -17,11 +18,10 @@ class Steinie(routing.Router):
     def wsgi_app(self, environ, start_response):
         request = wrappers.Request(environ)
         response = wrappers.Response()
-        for middleware_class in self.middleware:
-            new_response = middleware_class(self)(request, response)
-            if new_response:
-                return new_response(environ, start_response)
-        new_response = self.handle(request, response)
+        funcs = [m(self) for m in self.middleware]
+        funcs.append(self.handle)
+        funcs = [utils.req_or_res(f) for f in funcs]
+        new_response = utils.wrap_all_funcs(*funcs)(request, response)
         if not isinstance(new_response, wrappers.Response):
             response.data = new_response
         else:

@@ -184,7 +184,7 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, request, response):
+            def __call__(self, request, response, _next):
                 response.data = "MIDDLEWARE INVOKED"
                 return response
 
@@ -200,7 +200,7 @@ class MiddlewareTestCase(TestCase):
             def __init__(self, app):
                 pass
 
-            def __call__(self, request, response):
+            def __call__(self, request, response, _next):
                 response.data = "MIDDLEWARE INVOKED"
                 return response
 

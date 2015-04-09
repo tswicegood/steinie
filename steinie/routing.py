@@ -2,6 +2,8 @@ from functools import wraps
 from werkzeug import routing
 from werkzeug.routing import BaseConverter
 
+from . import utils
+
 
 def rule_dispatcher(rule, request, response):
     if getattr(rule, '_steinie_dispatchable', False):
@@ -23,15 +25,10 @@ class Rule(routing.Rule):
         self.bound_prefix = None
 
     def dispatch(self, request, response):
-        for middleware_class in self.router.middleware:
-            middleware = middleware_class(self)
-            new_response = middleware(request, response)
-            if new_response:
-                return new_response
-        try:
-            return self.func(request, response)
-        except TypeError:
-            return self.func(request)
+        funcs = [m(self) for m in self.router.middleware]
+        funcs.append(self.func)
+        funcs = [utils.req_or_res(f) for f in funcs]
+        return utils.wrap_all_funcs(*funcs)(request, response)
 
     def empty(self):
         rule = super(Rule, self).empty()
