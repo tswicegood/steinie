@@ -19,6 +19,12 @@ def generate_example_environ(method="GET"):
     }
 
 
+def generate_mock_request(environ=None):
+    if environ is None:
+        environ = generate_example_environ()
+    return mock.Mock(path="/bar/foo", environ=environ)
+
+
 class NestedRoutingTestCase(TestCase):
     def test_allows_tested_router(self):
         r1 = routing.Router()
@@ -40,6 +46,21 @@ class NestedRoutingTestCase(TestCase):
             "request.original_path: /bar/foo",
         ])
         self.assertEqual(expected, response)
+
+    def test_middleware_is_instaniated_with_route(self):
+        Middleware = mock.Mock()
+        r = routing.Router()
+        r.use(Middleware)
+
+        @r.get("/foo")
+        def handler(*args):
+            pass
+
+        a = app.Steinie()
+        a.use("/bar", r)
+
+        a.handle(generate_mock_request(), mock.Mock())
+        Middleware.assert_called_once_with(r)
 
 
 class ParamFunctionTestCase(TestCase):

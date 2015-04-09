@@ -1,11 +1,18 @@
 from functools import wraps
 
 
+def wrap_middleware_around_route(middlewares, route, router):
+    funcs = [m(router) for m in middlewares]
+    funcs.append(route)
+    funcs = [req_or_res(f) for f in funcs]
+    return wrap_all_funcs(*funcs)
+
+
 def req_or_res(func):
     def inner(request, response, **kwargs):
         try:
             return func(request, response, **kwargs)
-        except TypeError as e:
+        except TypeError:
             return func(request, **kwargs)
     return inner
 

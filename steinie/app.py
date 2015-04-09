@@ -18,10 +18,11 @@ class Steinie(routing.Router):
     def wsgi_app(self, environ, start_response):
         request = wrappers.Request(environ)
         response = wrappers.Response()
-        funcs = [m(self) for m in self.middleware]
-        funcs.append(self.handle)
-        funcs = [utils.req_or_res(f) for f in funcs]
-        new_response = utils.wrap_all_funcs(*funcs)(request, response)
+        new_response = utils.wrap_middleware_around_route(
+            self.middleware,
+            self.handle,
+            self
+        )(request, response)
         if not isinstance(new_response, wrappers.Response):
             if new_response is None:
                 new_response = ""

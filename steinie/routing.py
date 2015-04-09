@@ -25,10 +25,11 @@ class Rule(routing.Rule):
         self.bound_prefix = None
 
     def dispatch(self, request, response):
-        funcs = [m(self) for m in self.router.middleware]
-        funcs.append(self.func)
-        funcs = [utils.req_or_res(f) for f in funcs]
-        return utils.wrap_all_funcs(*funcs)(request, response)
+        return utils.wrap_middleware_around_route(
+            self.router.middleware,
+            self.func,
+            self.router
+        )(request, response)
 
     def empty(self):
         rule = super(Rule, self).empty()
@@ -75,6 +76,7 @@ class Router(object):
 
         request.params = params
         rule = self.routes[endpoint]
+        print("dispatching %s" % rule)
         return rule_dispatcher(rule, request, response)
 
     def method(self, route, methods=None):
