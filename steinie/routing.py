@@ -117,6 +117,9 @@ class Router(object):
     def put(self, route):
         return self.method(route, methods=['PUT'])
 
+    def trace(self, route):
+        return self.method(route, methods=['TRACE'])
+
     def param(self, name):
         def outer(fn):
             class BasicParameter(BaseConverter):
