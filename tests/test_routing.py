@@ -217,3 +217,41 @@ class MiddlewareTestCase(TestCase):
         with utils.run_app(a):
             response = utils.get("http://localhost:5151/baz")
             self.assertIn("MIDDLEWARE INVOKED", response.content)
+
+    def test_dispatches_if_next_is_called(self):
+        class Middleware(object):
+            def __init__(self, app):
+                pass
+
+            def __call__(self, request, response, _next):
+                return _next(request, response)
+
+        a = app.Steinie()
+        a.use(Middleware)
+
+        @a.get("/foo")
+        def get(request, response):
+            return "Hello from the route"
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/foo")
+            self.assertIn("Hello from the route", response.content)
+
+    def test_does_not_call_root_if_next_is_not_called(self):
+        class Middleware(object):
+            def __init__(self, app):
+                pass
+
+            def __call__(self, request, response, _next):
+                pass
+
+        a = app.Steinie()
+        a.use(Middleware)
+
+        @a.get("/foo")
+        def get(request, response):
+            return "Should never see this"
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/foo")
+            self.assertEqual('None', response.content)
