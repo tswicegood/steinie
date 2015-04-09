@@ -42,6 +42,7 @@ class SteinieTest(unittest.TestCase):
             expected = "Hi, from port {}".format(random_port)
             self.assertEqual(expected, r.content)
 
+    @unittest.skip
     def test_can_listen_on_alternatve_addresses(self):
         host = socket.gethostname()
         a = app.Steinie(host=host)
