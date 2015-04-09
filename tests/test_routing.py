@@ -273,6 +273,54 @@ class DecoratedOptionFunctionsTestCase(TestCase):
             router.handle(request, mock.Mock())
 
 
+class DecoratedPatchFunctionsTestCase(TestCase):
+    def test_wrapps_existing_func(self):
+        router = routing.Router()
+
+        @router.patch("/")
+        def index(request, response):
+            return request.path
+
+        random_path = "/foo/bar/%s" % random.randint(100, 200)
+        request = mock.Mock(path=random_path)
+
+        self.assertEqual(index(request, mock.Mock()), random_path)
+        self.assertEqual(index.__name__, "index")
+
+    def test_is_dispatched_to_via_handle(self):
+        r = random.randint(1000, 2000)
+        router = routing.Router()
+
+        @router.patch("/")
+        def index(request, response):
+            return r
+
+        environ = generate_example_environ(method='PATCH')
+        request = mock.Mock(path='/', environ=environ)
+
+        response = router.handle(request, mock.Mock())
+        self.assertEqual(r, response)
+
+    def test_does_not_match_on_get_or_post(self):
+        r = random.randint(1000, 2000)
+        router = routing.Router()
+
+        @router.patch("/")
+        def index(request, response):
+            return r
+
+        get_environ = generate_example_environ(method='GET')
+        request = mock.Mock(path='/', environ=get_environ)
+
+        with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
+            router.handle(request, mock.Mock())
+
+        post_environ = generate_example_environ(method='POST')
+        request = mock.Mock(path='/', environ=post_environ)
+        with self.assertRaises(werkzeug.exceptions.MethodNotAllowed):
+            router.handle(request, mock.Mock())
+
+
 class DecoratedPostFunctionsTestCase(TestCase):
     def test_wraps_existing_func(self):
         router = routing.Router()
