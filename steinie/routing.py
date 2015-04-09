@@ -105,6 +105,9 @@ class Router(object):
     def info(self, route):
         return self.method(route, methods=['INFO', ])
 
+    def options(self, route):
+        return self.method(route, methods=['OPTIONS', ])
+
     def param(self, name):
         def outer(fn):
             class BasicParameter(BaseConverter):
