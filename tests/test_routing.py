@@ -84,6 +84,45 @@ class NestedRoutingTestCase(TestCase):
         a.handle(generate_mock_request(), mock.Mock())
         Middleware.assert_called_once_with(r)
 
+    def test_parameters_are_not_shared_with_parents_or_siblings(self):
+        r1 = routing.Router()
+
+        @r1.param("foo")
+        def foo_param(param):
+            return "foo"
+
+        @r1.get("/<foo:foo>")
+        def foo_handler(request, response):
+            return request.params
+
+        r2 = routing.Router()
+
+        @r2.param("bar")
+        def bar_param(param):
+            return "bar"
+
+        @r2.get("/<bar:bar>")
+        def bar_handler(request, response):
+            return request.params
+
+        a = app.Steinie()
+        a.use("/foo", r1)
+        a.use("/bar", r2)
+
+        @a.get("/")
+        def handler(request, response):
+            return request.params
+
+        request = mock.Mock(path="/", environ=generate_example_environ())
+        response = a.handle(request, mock.Mock())
+        self.assertEqual({}, response)
+
+        request.path = "/foo/bar"
+        self.assertEqual({"foo": "foo"}, a.handle(request, mock.Mock()))
+
+        request.path = "/bar/foo"
+        self.assertEqual({"bar": "bar"}, a.handle(request, mock.Mock()))
+
 
 class ParamFunctionTestCase(TestCase):
     def test_basic_router(self):
