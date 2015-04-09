@@ -99,6 +99,9 @@ class Router(object):
     def get(self, route):
         return self.method(route, methods=['GET', ])
 
+    def delete(self, route):
+        return self.method(route, methods=['DELETE', ])
+
     def head(self, route):
         return self.method(route, methods=['HEAD', ])
 
