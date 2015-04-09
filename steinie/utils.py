@@ -1,6 +1,16 @@
 from functools import wraps
 
 
+def wrap_all_funcs(*funcs):
+    next_func = None
+    for func in reversed(funcs):
+        if next_func is None:
+            next_func = func
+            continue
+        next_func = generate_next(func, next_func)
+    return next_func
+
+
 def generate_next(func, after):
     def next(*args, **kwargs):
         return after(*args, **kwargs)
