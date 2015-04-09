@@ -25,6 +25,28 @@ def generate_mock_request(environ=None):
     return mock.Mock(path="/bar/foo", environ=environ)
 
 
+class DecoratedFunctionsWithRawMethodTestCase(TestCase):
+    def test_can_decorate_with_multiples(self):
+        r = random.randint(1000, 2000)
+        router = routing.Router()
+
+        @router.method("/", methods=["GET", "POST"])
+        def index(request, response):
+            return r
+
+        environ = generate_example_environ(method='GET')
+        request = mock.Mock(path='/', environ=environ)
+
+        get_response = router.handle(request, mock.Mock())
+        self.assertEqual(r, get_response)
+
+        environ = generate_example_environ(method='POST')
+        post_response = router.handle(request, mock.Mock())
+        self.assertEqual(r, post_response)
+
+        self.assertEqual(get_response, post_response)
+
+
 class NestedRoutingTestCase(TestCase):
     def test_allows_tested_router(self):
         r1 = routing.Router()
