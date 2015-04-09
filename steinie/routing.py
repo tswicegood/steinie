@@ -111,6 +111,9 @@ class Router(object):
     def patch(self, route):
         return self.method(route, methods=['PATCH'])
 
+    def put(self, route):
+        return self.method(route, methods=['PUT'])
+
     def param(self, name):
         def outer(fn):
             class BasicParameter(BaseConverter):
