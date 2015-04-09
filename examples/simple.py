@@ -2,9 +2,9 @@ import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from steinie import app
+from steinie import Steinie
 
-app = app.Steinie()
+app = Steinie()
 
 
 @app.get("/")
