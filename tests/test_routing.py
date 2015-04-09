@@ -254,4 +254,4 @@ class MiddlewareTestCase(TestCase):
 
         with utils.run_app(a):
             response = utils.get("http://localhost:5151/foo")
-            self.assertEqual('None', response.content)
+            self.assertEqual('', response.content)

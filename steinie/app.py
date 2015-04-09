@@ -23,6 +23,8 @@ class Steinie(routing.Router):
         funcs = [utils.req_or_res(f) for f in funcs]
         new_response = utils.wrap_all_funcs(*funcs)(request, response)
         if not isinstance(new_response, wrappers.Response):
+            if new_response is None:
+                new_response = ""
             response.data = new_response
         else:
             response = new_response

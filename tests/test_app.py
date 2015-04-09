@@ -111,3 +111,14 @@ class SteinieTest(unittest.TestCase):
         with utils.run_app(a):
             response = utils.get("http://localhost:5151/baz")
             self.assertEqual("BAZ", response.content)
+
+    def test_None_returns_end_up_as_empty_strings(self):
+        a = app.Steinie()
+
+        @a.get("/foobar")
+        def get(request, response):
+            return None
+
+        with utils.run_app(a):
+            response = utils.get("http://localhost:5151/foobar")
+            self.assertEqual("", response.content)
