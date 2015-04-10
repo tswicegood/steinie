@@ -216,4 +216,12 @@ Parameters
   or some other similar transformation, but they won't let you change the
   response that Steinie returns.
 
+
+Inspiration
+-----------
+Steinie was inspired in heavily by `Express`_ in the server-side JavaScript
+world.  For the 4.x rewrite, Express started leaning heavily on the router based
+model that Steinie uses.
+
+.. _Express: http://expressjs.com/
 .. _Werkzeug: http://werkzeug.pocoo.org/
