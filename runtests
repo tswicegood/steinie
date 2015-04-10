@@ -1,0 +1,2 @@
+#!/bin/bash
+watchmedo shell-command -c "nosetests --with-progressive" -R -p "*.py"
