@@ -6,7 +6,7 @@ else:
 
 setup(
     name='steinie',
-    version='1.0.0'
+    version='1.0.0',
     author='Travis Swicegood',
     author_email='development@domain51.com',
     description='A little framework for doing web applications',
