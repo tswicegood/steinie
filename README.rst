@@ -139,7 +139,7 @@ be intantiated and provided a ``Router`` instance, then invoked via the
 ``__call__`` method.  That's it.  Add this to your file and then you can say
 you've created your very own Steinie middleware:
 
-.. code-block::
+.. code-block:: python
 
     class CapitalizeMiddleware(object):
         def __init__(self, route):
