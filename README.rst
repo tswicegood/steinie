@@ -177,7 +177,7 @@ router to use it.  Enter ``router.use`` again:
 
     route.use(CapitalizeMiddleware)
 
-This is the same function you used to attach a router to an application, but
+This is the same method you used to attach a router to an application, but
 this time there's no route (the first argument you used above) associated with
 it.  Providing ``router.use`` with a single argument signals to Steinie that
 you're giving it a middleware that it should execute when dealing with all
