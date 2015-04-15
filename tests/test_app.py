@@ -36,6 +36,19 @@ class SteinieTest(unittest.TestCase):
             self.assertEqual(201, r.status_code)
             self.assertEqual("Some string", r.content)
 
+    def test_route_can_return_code_plus_string_plus_headers(self):
+        a = app.Steinie()
+
+        @a.get("/")
+        def some_route(req, res):
+            return 201, "Some string", {"X-Steinie": "Hi there!"}
+
+        with utils.run_app(a):
+            r = utils.get("http://localhost:5151/")
+            self.assertEqual(201, r.status_code)
+            self.assertEqual("Some string", r.content)
+            self.assertIn("x-steinie", r.headers)
+
     def test_is_a_route(self):
         a = app.Steinie()
         self.assertIsInstance(a, routing.Router)
