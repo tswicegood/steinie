@@ -12,6 +12,30 @@ from . import utils
 
 
 class SteinieTest(unittest.TestCase):
+    def test_route_can_return_string(self):
+        a = app.Steinie()
+
+        @a.get("/")
+        def some_route(req, res):
+            return "Some string"
+
+        with utils.run_app(a):
+            r = utils.get("http://localhost:5151/")
+            self.assertEqual(200, r.status_code)
+            self.assertEqual("Some string", r.content)
+
+    def test_route_can_return_code_plus_string(self):
+        a = app.Steinie()
+
+        @a.get("/")
+        def some_route(req, res):
+            return 201, "Some string"
+
+        with utils.run_app(a):
+            r = utils.get("http://localhost:5151/")
+            self.assertEqual(201, r.status_code)
+            self.assertEqual("Some string", r.content)
+
     def test_is_a_route(self):
         a = app.Steinie()
         self.assertIsInstance(a, routing.Router)

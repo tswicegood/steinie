@@ -24,9 +24,12 @@ class Steinie(routing.Router):
             self
         )(request, response)
         if not isinstance(new_response, wrappers.Response):
-            if new_response is None:
-                new_response = ""
-            response.data = new_response
+            if type(new_response) is tuple:
+                response.status_code, response.data = new_response
+            else:
+                if new_response is None:
+                    new_response = ""
+                response.data = new_response
         else:
             response = new_response
         return response(environ, start_response)
