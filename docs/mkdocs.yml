@@ -1,1 +1,7 @@
-site_name: My Docs
+site_name: Steinie
+theme: yeti
+pages:
+  - ["index.md", "Welcome"]
+  - ["requests-responses.md", "Using", "Requests and Responses"]
+  - ["routers.md", "Using", "Routers"]
+  - ["middleware.md", "Using", "Middleware"]
