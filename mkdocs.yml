@@ -1,5 +1,5 @@
 site_name: Steinie
-theme: yeti
+theme: readthedocs
 pages:
   - ["index.md", "Welcome"]
   - ["requests-responses.md", "Using", "Requests and Responses"]
