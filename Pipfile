@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+werkzeug = "*"
+
+[dev-packages]
+nose = "*"
+nose-progressive = "*"
+mock = "*"
+requests = "*"
+watchdog = "*"
+
+[requires]
+python_version = "2.7"
