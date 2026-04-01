@@ -12,8 +12,9 @@ setup(
     description='A little framework for doing web applications',
     long_description=open("./README.rst").read(),
     packages=['steinie', ],
+    python_requires='>=3.8',
     install_requires=[
-        'werkzeug>=0.10.1',
+        'werkzeug>=2.1.0',
     ],
     include_package_data=True,
     zip_safe=False,

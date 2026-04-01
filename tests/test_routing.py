@@ -1,4 +1,6 @@
+import io
 import random
+import sys
 from unittest import TestCase
 
 import mock
@@ -673,3 +675,66 @@ class MiddlewareTestCase(TestCase):
         with utils.run_app(a):
             response = utils.get("http://localhost:5151/foo")
             self.assertEqual('', response.content)
+
+
+class SecurityTestCase(TestCase):
+    """Tests for security issues in routing."""
+
+    def test_dispatching_does_not_disclose_route_info(self):
+        """Routing must not print internal route information (information
+        disclosure / CWE-209).  Before the fix, handle() called print() with
+        the matched rule object, leaking function names and memory addresses to
+        stdout.
+        """
+        router = routing.Router()
+
+        @router.get("/secret")
+        def secret_handler(request, response):
+            return "ok"
+
+        environ = generate_example_environ()
+        request = mock.Mock(path="/secret", environ=environ)
+
+        captured = io.StringIO()
+        sys.stdout = captured
+        try:
+            router.handle(request, mock.Mock())
+        finally:
+            sys.stdout = sys.__stdout__
+
+        self.assertEqual(
+            "",
+            captured.getvalue(),
+            "handle() must not print any routing information to stdout",
+        )
+
+    def test_path_prefix_stripped_only_once_for_nested_routes(self):
+        """When a sub-router is mounted under a prefix, that prefix must be
+        removed from the front of the path exactly once (CWE-22 path
+        traversal / route bypass).  Before the fix, str.replace() without a
+        count argument removed *all* occurrences of the prefix, so a path
+        like /bar/bar/baz with a /bar mount would be reduced to /baz instead
+        of the correct /bar/baz.
+        """
+        r1 = routing.Router()
+
+        @r1.get("/bar/baz")
+        def handle_baz(request, response):
+            return request.path
+
+        r2 = routing.Router()
+        r2.use("/bar", r1)
+
+        # /bar/bar/baz should reach the /bar/baz route inside r1.
+        # With the bug the prefix /bar is stripped twice, yielding /baz which
+        # does not exist in r1, causing a 404/NotFound.
+        request = mock.Mock(
+            path="/bar/bar/baz",
+            environ=generate_example_environ(),
+        )
+        result = r2.handle(request, mock.Mock())
+        self.assertEqual(
+            "/bar/baz",
+            result,
+            "The mount prefix must only be stripped from the start of the path once",
+        )

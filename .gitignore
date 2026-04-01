@@ -2,3 +2,7 @@ MANIFEST
 dist/steinie*.tar.gz
 .coverage
 cover/*
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
