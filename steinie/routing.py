@@ -8,7 +8,7 @@ from . import utils
 def rule_dispatcher(rule, request, response):
     if getattr(rule, '_steinie_dispatchable', False):
         request.original_path = request.path
-        request.path = request.original_path.replace(rule.bound_prefix, '')
+        request.path = request.original_path.replace(rule.bound_prefix, '', 1)
         return rule.dispatch(request, response)
     try:
         return rule(request, response)
@@ -76,7 +76,6 @@ class Router(object):
 
         request.params = params
         rule = self.routes[endpoint]
-        print("dispatching %s" % rule)
         return rule_dispatcher(rule, request, response)
 
     def method(self, route, methods=None):
